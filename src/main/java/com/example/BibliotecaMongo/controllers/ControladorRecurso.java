@@ -2,7 +2,6 @@ package com.example.BibliotecaMongo.controllers;
 
 import com.example.BibliotecaMongo.dtos.RecursoDTO;
 import com.example.BibliotecaMongo.services.ServicioRecurso;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
