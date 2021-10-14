@@ -4,6 +4,8 @@ import com.example.BibliotecaMongo.dtos.RecursoDTO;
 import com.example.BibliotecaMongo.mappers.RecursoMapper;
 import com.example.BibliotecaMongo.models.Recurso;
 import com.example.BibliotecaMongo.repositories.RepositorioRecurso;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -164,5 +166,158 @@ class ServicioRecursoTest {
         Assertions.assertEquals(dato2.getTitulo(), resultado.getTitulo(), "el nombre no corresponde");
     }
 
+    @Test
+    void consultarDisponibilidadFavorable() throws JSONException {
+        var dato1 = new Recurso();
+        dato1.setId("1111");
+        dato1.setTitulo("los gatos");
+        dato1.setTipoRecurso("libro");
+        dato1.setTematica("gatos");
+        dato1.setNroEjemplares(2L);
+        dato1.setNroEjemplaresPrestados(0L);
+        dato1.setDisponible("esta disponible");
+        dato1.setFechaprestamo(LocalDate.now());
+        var dato2 = new Recurso();
+        dato2.setId("2222");
+        dato2.setTitulo("los perros");
+        dato2.setTipoRecurso("libro");
+        dato2.setTematica("gatos");
+        dato2.setNroEjemplares(2L);
+        dato2.setNroEjemplaresPrestados(2L);
+        dato2.setDisponible("esta disponible");
+        dato2.setFechaprestamo(LocalDate.now());
+        var lista = new ArrayList<Recurso>();
+        lista.add(dato1);
+        lista.add(dato2);
+        String id1="1111";
+
+        Mockito.when(repositorioRecurso.findById(dato1.getId())).thenReturn(lista.stream().findFirst());
+
+        var resultado = servicioRecurso.consultarDisponibilidad(id1);
+
+        JSONObject json = new JSONObject();
+        json.put("mensaje", "Esta disponible el recurso");
+        Assertions.assertEquals(json.toString(), resultado);
+
+    }
+    @Test
+    void consultarDisponibilidadDesfavorable() throws JSONException {
+        var dato1 = new Recurso();
+        dato1.setId("1111");
+        dato1.setTitulo("los gatos");
+        dato1.setTipoRecurso("libro");
+        dato1.setTematica("gatos");
+        dato1.setNroEjemplares(2L);
+        dato1.setNroEjemplaresPrestados(2L);
+        dato1.setDisponible("esta disponible");
+        dato1.setFechaprestamo(LocalDate.now());
+        var dato2 = new Recurso();
+        dato2.setId("2222");
+        dato2.setTitulo("los perros");
+        dato2.setTipoRecurso("libro");
+        dato2.setTematica("gatos");
+        dato2.setNroEjemplares(2L);
+        dato2.setNroEjemplaresPrestados(2L);
+        dato2.setDisponible("esta disponible");
+        dato2.setFechaprestamo(LocalDate.now());
+        var lista = new ArrayList<Recurso>();
+        lista.add(dato1);
+        lista.add(dato2);
+        String id1="1111";
+
+        Mockito.when(repositorioRecurso.findById(dato1.getId())).thenReturn(lista.stream().findFirst());
+
+        var resultado = servicioRecurso.consultarDisponibilidad(id1);
+        JSONObject json = new JSONObject();
+        json.put("mensaje", "Este recurso no esta disponible");
+        json.put("Fechadeprestamo", dato2.getFechaprestamo());
+        Assertions.assertEquals(json.toString(), resultado);
+    }
+    @Test
+    void prestarRecursoFavorable() throws JSONException {
+        var dato1 = new Recurso();
+        dato1.setId("1111");
+        dato1.setTitulo("los gatos");
+        dato1.setTipoRecurso("libro");
+        dato1.setTematica("gatos");
+        dato1.setNroEjemplares(2L);
+        dato1.setNroEjemplaresPrestados(0L);
+        dato1.setDisponible("esta disponible");
+        dato1.setFechaprestamo(LocalDate.now());
+        var dato2 = new Recurso();
+        dato2.setId("2222");
+        dato2.setTitulo("los perros");
+        dato2.setTipoRecurso("libro");
+        dato2.setTematica("gatos");
+        dato2.setNroEjemplares(2L);
+        dato2.setNroEjemplaresPrestados(2L);
+        dato2.setDisponible("esta disponible");
+        dato2.setFechaprestamo(LocalDate.now());
+        var lista = new ArrayList<Recurso>();
+        lista.add(dato1);
+        lista.add(dato2);
+        String id1="1111";
+
+        var dato3 = new RecursoDTO();
+        dato3.setId("1111");
+        dato3.setTitulo("los gatos");
+        dato3.setTipoRecurso("libro");
+        dato3.setTematica("gatos");
+        dato3.setNroEjemplares(2L);
+        dato3.setNroEjemplaresPrestados(1L);
+        dato3.setDisponible("esta disponible");
+        dato3.setFechaprestamo(LocalDate.now());
+
+        Mockito.when(repositorioRecurso.findById(dato1.getId())).thenReturn(lista.stream().findFirst());
+        Mockito.when(repositorioRecurso.save(Mockito.any())).thenReturn(new RecursoMapper().fromDTO(dato3));
+        var resultado = servicioRecurso.prestarRecurso(id1);
+        JSONObject json = new JSONObject();
+        json.put("Mensaje", "Si se pudo realizar el prestamo");
+        Assertions.assertEquals(json.toString(), resultado);
+
+    }
+    @Test
+    void prestarRecursoDesfavorable() throws JSONException {
+        var dato1 = new Recurso();
+        dato1.setId("1111");
+        dato1.setTitulo("los gatos");
+        dato1.setTipoRecurso("libro");
+        dato1.setTematica("gatos");
+        dato1.setNroEjemplares(2L);
+        dato1.setNroEjemplaresPrestados(2L);
+        dato1.setDisponible("esta disponible");
+        dato1.setFechaprestamo(LocalDate.now());
+        var dato2 = new Recurso();
+        dato2.setId("2222");
+        dato2.setTitulo("los perros");
+        dato2.setTipoRecurso("libro");
+        dato2.setTematica("gatos");
+        dato2.setNroEjemplares(2L);
+        dato2.setNroEjemplaresPrestados(2L);
+        dato2.setDisponible("esta disponible");
+        dato2.setFechaprestamo(LocalDate.now());
+        var lista = new ArrayList<Recurso>();
+        lista.add(dato1);
+        lista.add(dato2);
+        String id1="1111";
+
+        var dato3 = new RecursoDTO();
+        dato3.setId("1111");
+        dato3.setTitulo("los gatos");
+        dato3.setTipoRecurso("libro");
+        dato3.setTematica("gatos");
+        dato3.setNroEjemplares(2L);
+        dato3.setNroEjemplaresPrestados(1L);
+        dato3.setDisponible("esta disponible");
+        dato3.setFechaprestamo(LocalDate.now());
+
+        Mockito.when(repositorioRecurso.findById(dato1.getId())).thenReturn(lista.stream().findFirst());
+        Mockito.when(repositorioRecurso.save(Mockito.any())).thenReturn(new RecursoMapper().fromDTO(dato3));
+        var resultado = servicioRecurso.prestarRecurso(id1);
+        JSONObject json = new JSONObject();
+        json.put("Mensaje", "No hay Ejemplares suficientes para realizar el prestamo");
+        Assertions.assertEquals(json.toString(), resultado);
+
+    }
 
 }
