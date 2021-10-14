@@ -487,4 +487,44 @@ class ServicioRecursoTest {
         Assertions.assertEquals(dato1.getTitulo(), resultado.get(0).getTitulo());
         Assertions.assertEquals(dato2.getTitulo(), resultado.get(1).getTitulo());
     }
+    @Test
+    void recomendarTipoRecursoTematica(){
+        var dato1 = new Recurso();
+        dato1.setId("1111");
+        dato1.setTitulo("los gatos");
+        dato1.setTipoRecurso("libro");
+        dato1.setTematica("gatos");
+        dato1.setNroEjemplares(2L);
+        dato1.setNroEjemplaresPrestados(0L);
+        dato1.setDisponible("esta disponible");
+        dato1.setFechaprestamo(LocalDate.now());
+        var dato2 = new Recurso();
+        dato2.setId("2222");
+        dato2.setTitulo("los perros");
+        dato2.setTipoRecurso("libro");
+        dato2.setTematica("perros");
+        dato2.setNroEjemplares(2L);
+        dato2.setNroEjemplaresPrestados(0L);
+        dato2.setDisponible("esta disponible");
+        dato2.setFechaprestamo(LocalDate.now());
+
+        var dato3 = new Recurso();
+        dato3.setId("1111");
+        dato3.setTitulo("yhomi");
+        dato3.setTipoRecurso("libro");
+        dato3.setTematica("yhomi");
+        dato3.setNroEjemplares(2L);
+        dato3.setNroEjemplaresPrestados(0L);
+        dato3.setDisponible("esta disponible");
+        dato3.setFechaprestamo(LocalDate.now());
+        var lista = new ArrayList<Recurso>();
+        lista.add(dato1);
+        lista.add(dato2);
+        lista.add(dato3);
+
+        Mockito.when(repositorioRecurso.findAll()).thenReturn(lista);
+        var resultado = servicioRecurso.recomendarTipoRecursoTematica("libro","perros");
+
+        Assertions.assertEquals(dato2.getTitulo(), resultado.get(0).getTitulo());
+    }
 }
