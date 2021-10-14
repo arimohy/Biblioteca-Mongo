@@ -7,6 +7,7 @@ import com.example.BibliotecaMongo.repositories.RepositorioRecurso;
 import org.bson.json.JsonObject;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -40,34 +41,37 @@ public class ServicioRecurso {
         repositorioRecurso.deleteById(id);
     }
     //consultas
-    public JSONObject consultarDisponibilidad(String id){
+    public String consultarDisponibilidad(String id){
         Recurso recurso = repositorioRecurso.findById(id).orElseThrow(() -> new RuntimeException("Recurso no encontrado"));
         if(recurso.getNroEjemplaresPrestados()<recurso.getNroEjemplares()){
             JSONObject json = new JSONObject();
-            json.put("Mensaje", "Esta disponible el recurso");
-            return json;
+            json.put("mensaje", "Esta disponible el recurso");
+            return json.toString();
         }
         else {
             JSONObject json = new JSONObject();
-            json.put("Mensaje", "Esta disponible el recurso");
-            json.put("Fecha de prestamo", recurso.getFechaprestamo());
-            return json;
+            json.put("mensaje", "Este recurso no esta disponible");
+            json.put("Fechadeprestamo", recurso.getFechaprestamo());
+            System.out.println(json);
+            return json.toString();
         }
     }
-    public JSONObject prestarRecurso(String id) {
+    public String prestarRecurso(String id) {
+        RecursoDTO recursoDTO=obtenerPorId(id);
         Recurso recurso = repositorioRecurso.findById(id).orElseThrow(() -> new RuntimeException("Recurso no encontrado"));
         if(recurso.getNroEjemplaresPrestados()<recurso.getNroEjemplares()) {
-            recurso.setNroEjemplaresPrestados(recurso.getNroEjemplaresPrestados() + 1);
+            recursoDTO.setNroEjemplaresPrestados(recursoDTO.getNroEjemplaresPrestados() + 1);
             LocalDate fecha=LocalDate.now();
-            recurso.setFechaprestamo(fecha);
+            recursoDTO.setFechaprestamo(fecha);
+            modificar(recursoDTO);
             JSONObject json = new JSONObject();
             json.put("Mensaje", "Si se pudo realizar el prestamo");
-            return  json;
+            return json.toString();
         }
         else {
             JSONObject json = new JSONObject();
             json.put("Mensaje", "No hay Ejemplares suficientes para realizar el prestamo");
-            return json;
+            return json.toString();
         }
     }
     public List<RecursoDTO> recomendarTipoRecurso(String tiporecurso) {
@@ -90,18 +94,20 @@ public class ServicioRecurso {
                 .collect(Collectors.toList());
         return mapper.fromCollectionList(recursos);
     }
-    public JSONObject devolverRecurso(String id) {
+    public String devolverRecurso(String id) {
+        RecursoDTO recursoDTO=obtenerPorId(id);
         Recurso recurso = repositorioRecurso.findById(id).orElseThrow(() -> new RuntimeException("Recurso no encontrado"));
         if(recurso.getNroEjemplaresPrestados()>=1) {
-            recurso.setNroEjemplaresPrestados(recurso.getNroEjemplaresPrestados() - 1);
+            recursoDTO.setNroEjemplaresPrestados(recurso.getNroEjemplaresPrestados() - 1);
+            modificar(recursoDTO);
             JSONObject json = new JSONObject();
             json.put("Mensaje", "El recurso fue devuelto satisfactoriamente");
-            return  json;
+            return  json.toString();
         }
         else {
             JSONObject json = new JSONObject();
             json.put("Mensaje", "Recurso no puede ser devuelto por que no fue prestado");
-            return json;
+            return json.toString();
         }
     }
 }

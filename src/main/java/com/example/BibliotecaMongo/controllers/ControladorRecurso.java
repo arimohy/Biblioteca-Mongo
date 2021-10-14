@@ -51,11 +51,11 @@ public class ControladorRecurso {
     }
     //otras consultas si esta disponible
     @GetMapping("disponible/{id}")
-    public ResponseEntity<JSONObject> consultarDisponiblibilidad(@PathVariable("id") String id) {
+    public ResponseEntity consultarDisponiblibilidad(@PathVariable("id") String id) {
         return new ResponseEntity(servicioRecurso.consultarDisponibilidad(id), HttpStatus.OK);
     }
     @GetMapping("prestar/{id}")
-    public ResponseEntity<JSONObject> prestarRecurso(@PathVariable("id") String id) {
+    public ResponseEntity prestarRecurso(@PathVariable("id") String id) {
         return new ResponseEntity(servicioRecurso.prestarRecurso(id), HttpStatus.OK);
     }
     @GetMapping("recomendar/{tiporecurso}/{tematica}")
@@ -72,7 +72,7 @@ public class ControladorRecurso {
         return new ResponseEntity(servicioRecurso.recomendarTematica(tematica), HttpStatus.OK);
     }
     @GetMapping("devolver/{id}")
-    public ResponseEntity<JSONObject> devolverRecurso(@PathVariable("id") String id) {
+    public ResponseEntity devolverRecurso(@PathVariable("id") String id) {
         return new ResponseEntity(servicioRecurso.devolverRecurso(id), HttpStatus.OK);
     }
 }
